@@ -8,7 +8,7 @@
 
 这个项目希望记录木塔的外观、结构、内藏、倾斜历史及修缮方案之争。
 
-**[看实物 →](https://larashero3-dotcom.github.io/yingxian-pagoda/)**
+**[直接体验 →](https://larashero3-dotcom.github.io/yingxian-pagoda/)**
 
 ![1.00](preview/01-cover.png)
 
