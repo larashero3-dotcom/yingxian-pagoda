@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-skin="silk">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>應縣木塔</title>
+<style>
+/* =====================================================================
+   應縣木塔 · v9 — 竖屏小工具版
+
+   v9.1（lara 2026-08-27 在手机上看完打包版之后报的四件事，都是手上的事，
+   一个字、一处几何都没动）：
+     · 手机上没声音。AudioContext 原来在加载时就建出来了 —— iOS / WKWebView
+       里一个建在任何手势之前的 context，即便 resume() 报成功也可能整场是哑的。
+       现在触屏设备不在加载时建，第一次碰屏幕（或者按「入塔」）才建。桌面照旧，
+       那边提前建能让有 media engagement 的回访直接出声。
+       注意：iOS 的静音拨杆会把 Web Audio 整个静掉，而容器不许打包音频文件、
+       也不许 <audio> 走 data:，所以那一种没声音在包里没有解 —— 只能拨回来。
+     · 说明卡点不开。抓手原来只有上缘 44px，一张 128px 的卡有 84px 是死的，
+       点正文什么也不发生。现在收起时整张卡都是抓手，展开之后才收回上缘那道
+       （正文要滚，竖向手势得让回给滚动条）。拖动阈值 24px → 12px。
+       收起时 touch-action 从 pan-y 改成 none：收起的卡没东西可滚，pan-y 只会
+       把竖向手势让给浏览器的滚动判定，手指刚动就吃一发 pointercancel，手上
+       的感觉就是「不太灵敏」。
+     · 「回到外观总览」那道分割线压在正文上。那颗键 sticky 在底边，而背景上半
+       截是 55% 透的，正文从按钮里透出来、border-top 正好切在一行字中间。
+       现在背景实色，坡放到按钮外面去；而且收起时整个不给它 —— 128px 的 peek
+       里塞一颗 44px 的键，怎么排都是坐在字上。收起时反而多露一行正文。
+     · 加了署名。开篇题记的下缘，「在 [Moxt] 制作」，官网 wordmark。放这儿是
+       因为读者必须按「入塔」才能往下走，这一眼留得住，而正文五章一格不占
+       （顶栏已经有題名加五枚开关，底下五个章节键是拇指区，都动不得）。
+       「入塔」的 sticky 贴边跟着从 bottom:0 抬到 24px，不然矮屏滚起来它会压
+       到署名上。
+
+   v9 相对 v8 只改文字，一处几何、一枚构件都没动（lara 2026-08-27 定稿，
+   稿子在 personal/应县木塔-其二其三文案重写.md）：
+     · 其二 / 其三 重划分工。v8 的「塔里」一章同时讲塑像和结构，结构本来
+       是其三的活。其二改名「塔内珍藏」，只讲五座佛坛供着什么、佛像肚子里
+       藏着什么；暗层、斜戗、井栿三枚标注整个搬去其三，其二补一枚壁画。
+       其三副题从「内外两槽」改成「九层桁架」，说明卡重写成三段，第三个
+       数据块从「内槽底径」换成「铁钉 0 颗」。
+     · 六枚骨架标注全部重写，每条都先说这个构件是什么、再说它起什么作用 ——
+       v8 的写法假定读者已经知道「外槽」「井栿」是什么东西。
+     · 构件卡底部那颗返回键原来一律写「回到剖切说明」，改成按章节说话：
+       回到外观总览 / 回到内部总览 / 回到骨架总览。
+     · 其四的九格正文全部重写，逐层毫米数一个没动。刻度从十个减到九个：
+       v8 末尾那格「2026」的数字是按每年两三毫米推算的，不是实测，lara 把
+       它改回评估报告本身的年份 2021，并把「2020 · 二层 576 mm」并了进来 ——
+       576 是至今公布过的最后一套完整实测，这一格用它，src 标「实测」。
+       纪年轨的 CSS 本来就是照九个刻度画的。
+
+   v8 相对 v7 只改了开篇（lara 2026-08-27）：
+     · 加了一段开篇。落地之前底部那五个章节按钮不出现 —— 一进来先是
+       题记，读完才给导航。分两拍：建塔动画配四行引子，塔立定之后
+       换成题记（这座塔叫什么、在哪、多老）加梁思成 1933 年那句话。
+     · 那段题记原来是「其一 · 外观」卡的第一段，位置不对：外观该讲
+       八角五层、六道檐，讲不到「国内现存最古的木塔」。搬到开篇。
+     · 右上角那枚「遼」印撤了。它硬写在 CSS 里，五章都不变，于是
+       其五那一章（2021 评估、2024 机制、2026 建议）也盖着一枚辽代印。
+       而且它纯装饰、点不了、不解释 —— 一个装饰让人开口问「这是为何」，
+       它就没干成活（lara 2026-08-27 原话）。
+     · 「国务院公布的第一批全国重点文物保护单位」删掉。
+
+   v5 是 1512×856 的桌面稿：诗在左栏、章节号竖排在右缘、说明卡是左侧
+   一根 300px 的柱子。v6 起重排成一只手能拿住的东西：
+
+     · 章节导航从左栏的一行小字变成底部四个大按钮，拇指区
+     · 说明卡从左侧柱子变成 bottom sheet，露一段，拖上来读全文
+     · 十五个构件标注从「引线 + 标签」变成塔身上可点的编号圆点，
+       因为 390 宽的画面没有放引线的余地（v5 索性在手机上整个关掉）
+     · 傾斜那九个纪年不再是九个 30px 的点，横向滑动直接擦洗，
+       塔在拇指下面歪 —— 970 年是个过程，手指是走过它最自然的方式
+
+   只有素絹一种装帧，所以它的色值直接落在 :root，不再做皮肤覆盖。
+   ===================================================================== */
+:root{
+  --k:1;
+  --paper:#e8e0cc; --w0:#f6f1e0; --w1:#efe8d4; --w2:#e4dcc4;
+  --ink:#2b2a22; --ink2:#7d7866; --ink3:#3c3a2e;
+  --accent:#7d3b2e;
+  --line:#d6cdb4; --rule2:#b9b09a; --divider:rgba(50,46,32,.26);
+  --hairline:rgba(48,44,30,.34); --grid:rgba(80,74,50,.045);
+  --pl-a:#f8f4e4; --pl-b:#ece5d0; --pl-br:#cfc6ac; --pl-fg:#33312a;
+  --track:#d3cab0; --fillc:#7d3b2e;
+  --btn:#2b2a22; --btn-fg:#f4efdd;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  /* 正文改简体之后这一栏也要跟着改：原来第一位是 Hiragino Mincho ProN、
+     第二位 Yu Mincho，两个都是日文明朝体，Mac 上永远命中第一个，简体宋
+     排在第三位轮不到。日文字形套简体字会缺字回退，一行里混两套字形。
+     所以先中文衬线，日文明朝退到最后当兜底。 */
+  --mincho:"Songti SC",STSong,"Noto Serif CJK SC","Noto Serif SC","Source Han Serif SC",
+           "Source Han Serif CN","STZhongsong","SimSun","Hiragino Mincho ProN",serif;
+
+  /* PC 模拟器注入 --safe-area-inset-*，真机给 env()。两端都要生效，所以
+     一律用 var(--safe-area-inset-x, env(...), 0px) 这个组合。 */
+  --sa-t:var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+  --sa-b:var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+
+  --bar-t:46px;      /* 顶栏 */
+  --tab-h:62px;      /* 底部章节栏 */
+  --strip-h:44px;    /* sheet 上方那条：营造进度 / 纪年轨 */
+  /* 卡片收起时露出的高度。三个地方要用到同一个数：卡片自己的 max-height、
+     它上面那条的位置、以及 layout() 给塔留的取景带。所以放在变量里，
+     JS 也从这里读，改一处就够。 */
+  --peek-cut:128px;
+  --peek-lean:150px;
+  /* 其五的卡比傾斜那张高一点：干预深度那条尺要跟标题一起露出来，
+     不然收起状态下读者只看到方案名，看不到它要动多少。 */
+  --peek-fix:166px;
+
+  /* 右缘那行竖排章的列宽。竖排文字的列宽就是它的 line-height，两处必须是
+     同一个数，所以只在这里写一遍：.col-r 拿它当 width，.title-cn 拿它当
+     line-height。为什么 .col-r 非得写死宽度，见那条规则上面的注释。 */
+  --vcol:27px;
+
+  /* ---- 浮在天上的那几笔 ---- *
+   * 页面的字分两处：一处落在实纸上（说明卡、顶栏、章节栏），一处浮在画布的
+   * 天上（右缘的章、开篇那首诗、塔上的铅垂注、纪年轨、方案轨）。
+   * 前者的底色永远是绢，用 --ink 那一套就够。后者的底色是天，而天跟着时辰
+   * 变 —— 2026-08-27 让「夜」真的暗下来之后（见 app.js 的 inkSkyTint），
+   * 这些墨色贴在暗天上就读不出来了。所以它们单开一套，夜里翻成骨白。
+   * 靛纸描白、描金是立轴上的真做法，不是权宜。
+   * --air 主笔、--air2 次笔、--air-a 朱批、--air-l 界线。
+   * -------------------------------------------------------------- */
+  --air:var(--ink3); --air2:var(--ink2);
+  --air-a:var(--accent); --air-l:var(--rule2);
+}
+/* 夜。朱批那一档用的是 NIGHT 自己那套 css 里的 accent（#d08a4a），
+   两处同源，不另调一个数。 */
+html[data-time="night"]{
+  --air:#d5cebb; --air2:#a29b87;
+  /* 界线这一档要够亮：纪年轨那条 1px 横过整幅，第一次调成 #5b5f68 之后在
+     夜天上只剩最左边一小截看得见，整条轨等于没有。白天 --rule2 对着淡天是
+     中等对比，夜里要的是同样的中等对比，不是同样的深浅。 */
+  --air-a:#d08a4a; --air-l:#7b8290;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+html{touch-action:manipulation}
+body{
+  background:var(--paper);color:var(--ink);
+  font-family:var(--sans);overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;user-select:none;
+}
+#app{position:fixed;inset:0;overflow:hidden}
+
+/* ---------- 背景：一张挂起来的素絹 ---------- */
+.bg-wash{position:absolute;inset:0;
+  background:
+    repeating-linear-gradient(to bottom,rgba(120,108,78,.030) 0 1px,transparent 1px 3px),
+    radial-gradient(124% 84% at 50% 42%,
+      var(--w0) 0%, var(--w0) 30%, var(--w1) 62%, var(--w2) 86%, var(--paper) 100%);}
+.bg-grid2{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(0,0,0,0) 62%,rgba(90,78,52,.05) 100%);}
+#stage{position:absolute;left:0;top:0;display:block;
+  /* 画布自己吃掉手势：不让拖拽变成页面滚动或双指缩放页面 */
+  touch-action:none;}
+#stage.dragging{cursor:grabbing}
+.flash{position:absolute;inset:0;pointer-events:none;background:#fff;opacity:0}
+
+/* ---------- 顶栏 ---------- */
+header{position:absolute;left:0;right:0;top:0;z-index:8;
+  height:calc(var(--bar-t) + var(--sa-t));
+  padding:var(--sa-t) 14px 0;
+  display:flex;align-items:center;gap:9px;
+  background:linear-gradient(to bottom,var(--paper) 62%,rgba(232,224,204,0));}
+.brand{font-family:var(--mincho);font-weight:400;
+  font-size:18px;letter-spacing:3.4px;color:var(--ink);flex:0 0 auto;}
+.top-mid{font-family:var(--mincho);font-weight:400;font-size:8.5px;
+  letter-spacing:1.6px;color:var(--ink2);flex:1 1 auto;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* 顶栏多了天候和时两枚图记之后，390 宽里给这一行只剩 57px —— 十一个字要 111，
+   省略号一切就成了「佛宫寺释…」，比不写还差。所以：装得下就写，装不下不写。
+   这条信息在右缘竖排底下的「（应县 · 辽 1056）」和开篇的题记里都有，顶栏是
+   它第三次出现，少一次不丢东西。
+   判断交给 layout() 去量 scrollWidth，不用媒体查询 —— 这个文件外面套了一层
+   390 的手机壳，媒体查询读的是桌面窗口，在壳里永远不触发。
+   visibility 而不是 display:none —— 这一行还是顶栏的弹性垫，撤了它图记就贴到
+   「應縣木塔」旁边去了。 */
+.top-mid.cut{visibility:hidden}
+.top-right{display:flex;align-items:center;gap:4px;flex:0 0 auto}
+/* 顶栏那两枚开关跟塔上的签是一套东西，所以一起改（lara 2026-08-26）。
+   原来是描一圈实线的圆角小方框 —— 那是表单控件的样子。现在只留左边一道
+   竖界，像书页上的界行；状态不靠边框亮，靠字的颜色：开着是墨色（--ink），
+   关掉褪成淡墨（--ink2）。「重营」那个回环记号同族，只是没有状态。 */
+.tbtn{font-family:var(--mincho);font-weight:400;font-size:11.5px;
+  letter-spacing:1.6px;color:var(--ink2);
+  background:none;border:0;border-left:1px solid var(--line);border-radius:0;
+  /* 44 的可点高度，视觉上仍只是一行小字 */
+  min-height:30px;padding:0 7px 0 9px;cursor:pointer;
+  display:flex;align-items:center;gap:4px;line-height:1;}
+.tbtn:active{opacity:.55}
+.tbtn b{font-weight:400;color:var(--ink2);opacity:.78}
+/* 开着的时候值用朱色，像读书人在旁边点的一笔朱批 —— 顶栏没有边框了，
+   状态全落在这一个字上，纯墨色的「有」和淡墨的「无」隔得不够开。 */
+.tbtn span{color:#9c3226}
+.tbtn.off span{color:var(--ink2);opacity:.6}
+#rebuildBtn{font-size:14px;letter-spacing:0;padding:0 4px 0 9px;color:var(--ink2)}
+
+/* ---------- 顶栏的图记 ---------- *
+ * 天候和时是从 cc 那一版接回来的两个控件，音是原来那枚「声音 有」。三个都改成
+ * 图记：「WEATHER CLEAR」那样两段字排一行，五个控件挤在 390 宽的顶栏里就是
+ * 字压字（lara 2026-08-27：「声音…文字太复杂了」）。
+ * 图记画的是当前那一态本身 —— 晴是一轮日，雨是云底下三道，雷是云底下一折，
+ * 雪是六出。所以不需要另写状态值。名字只在点过之后从图记底下浮一下就退：
+ * 图记说得清是哪一态，说不清这一态叫什么，那一下补上这件事。
+ * 界行、可点高度、按下的手感都跟 .tbtn 同一套。
+ * ------------------------------------------------------------------- */
+.ibtn{position:relative;background:none;border:0;
+  border-left:1px solid var(--line);border-radius:0;
+  min-height:30px;padding:0 8px;cursor:pointer;color:var(--ink);
+  display:flex;align-items:center;justify-content:center;line-height:1;
+  -webkit-tap-highlight-color:transparent;}
+.ibtn:active{opacity:.55}
+.ibtn svg{width:16px;height:16px;display:block;
+  fill:none;stroke:currentColor;stroke-width:1.5;
+  stroke-linecap:round;stroke-linejoin:round;}
+/* 日晷上那一点日、月的实心那半，是填不是描 */
+.ibtn svg .f{fill:currentColor;stroke:none}
+/* 静音是这三枚里唯一的「关」态，褪成淡墨 */
+.ibtn.off{color:var(--ink2)}
+.ibtn.off svg{opacity:.62}
+.ibtn i{position:absolute;left:50%;top:calc(100% - 1px);transform:translateX(-50%);
+  font-family:var(--mincho);font-style:normal;font-size:10px;letter-spacing:1.2px;
+  color:#9c3226;white-space:nowrap;pointer-events:none;
+  opacity:0;transition:opacity .55s ease;}
+.ibtn i.on{opacity:1;transition:opacity .1s ease}
+@media (max-width:340px){.ibtn{padding:0 6px}.ibtn svg{width:15px;height:15px}}
+
+/* ---------- 右缘：竖排的章 ---------- *
+ * v7 在这行竖排底下盖了一枚朱色的「遼」印，2026-08-27 撤了。理由有三条，
+ * 第三条最要紧：它硬写在 CSS 里（.col-r::after，content:"遼"），五章都不变，
+ * 所以翻到其五 —— 那一章讲的是 2021 年结构评估、2024 年协调机制、2026 年
+ * 两会建议 —— 右上角照旧盖着一枚辽代印，一枚辽印压在一页 2026 年的监测
+ * 数据上。其次它纯装饰：没有说明、点不了、不解释。最后它是全页最响的一块
+ * 红，而塔身上还有五枚标注印，同一个朱色乘以六就不是点睛了。
+ * 立轴右缘的印是真做法，但要么跟着章节走（其一至其四盖「遼」、其五盖
+ * 「丙午」），要么不盖。半吊子的那种撤掉。
+ * ------------------------------------------------------------------- */
+/* width 是必须的，不是保险。lara 2026-08-27 在 iPhone 上：「标题 其一 塔、
+   其二 这些都被截断了，超出屏幕了」—— 右缘那行竖排有一半在屏幕外面。
+   原因是 .col-r 没写宽度，靠 shrink-to-fit 由内容撑：而它唯一的孩子
+   .title-cn 是 writing-mode:vertical-rl，跟父级（横排）是两个正交的书写流。
+   WebKit 算 shrink-to-fit 时不把正交子元素的块向尺寸计进去，宽度收成 0；
+   right:13px 于是把一个 0 宽的盒子的右边贴到 380，.title-cn 再从 380 往右
+   画 27px，到 407 —— 屏宽 393，正好切掉一半。Chrome/Blink 算的是 27px，
+   所以桌面预览和模拟器上一直是对的，只有真机 Safari/WKWebView 露馅。
+   写死宽度，宽度就不再经过那条正交流的推算。 */
+.col-r{position:absolute;right:13px;top:calc(var(--bar-t) + var(--sa-t) + 16px);
+  width:var(--vcol);
+  text-align:center;z-index:6;pointer-events:none;}
+.title-cn{font-family:var(--mincho);font-weight:400;
+  font-size:19px;line-height:var(--vcol);letter-spacing:2.5px;
+  color:var(--air);writing-mode:vertical-rl;
+  transition:color .8s ease;}
+.title-cn b{font-weight:400;display:inline}
+/* 素絹不带英文，这几件在这版一律不出现 */
+.glyphs,.roman,.eyebrow,.big-cn,.sub-cn,.pager,.tag,#bigpct{display:none}
+
+/* ---------- 左上：其一那首诗 ---------- */
+.col-l{position:absolute;left:16px;top:calc(var(--bar-t) + var(--sa-t) + 14px);
+  right:52px;z-index:5;pointer-events:none;}
+.quote{font-family:var(--mincho);font-size:13px;line-height:25px;
+  color:var(--air);letter-spacing:1.2px;
+  transition:opacity .4s ease,color .8s ease;}
+.quote i{font-style:normal}
+/* v7 的规则是「建完就淡出、非其一就淡出」。v8 收紧成一条：这四行只属于开篇
+   第一拍。原来那条的毛病是进去之后按 重营 会把诗再叫回来一次。 */
+.quote{opacity:0}
+#app.is-ovt-1 .quote{opacity:1}
+
+/* ---------- 开篇 ---------- *
+ * lara 2026-08-27：「整个产品，是不是有个总览开篇，先把下面的其一其二啥的都
+ * 隐藏起来。」三拍，读完点一下才落地：
+ *   一拍 · 建塔动画在走，四行引子读在天上（就是上面那个 .quote，位置没动 ——
+ *     竖屏里左上角本来就是塔刹要长到的地方，字和塔在同一块空里）
+ *   二拍 · 走到半程，引子退掉，题记从下缘缓缓浮起来：这座塔叫什么、在哪、多老
+ *   三拍 · 塔立定，「入塔」才出现
+ *
+ * 上午那一版是两拍，二拍等塔立定才上，而且是一层盖住全屏的帘子。两处都改了：
+ *
+ * 一、题记提前到半程。lara 看了截图说「现在开头的下面很空」—— 对的，塔立定要
+ *   4.4 秒，这 4.4 秒里下缘那一条二百来像素一直是空的，而那正是画面最下面、
+ *   眼睛最后落到的地方。现在半程就开始浮，塔还在长，字已经在下面聚起来，
+ *   到塔立定时这一页正好是完整的：塔在中间，题记在下缘。
+ *
+ * 二、帘子只铺下缘那一条，不再盖全屏。原来是「一层素絹压在整幅画上」，
+ *   现在是「一方题签压在画的下缘」—— 而且这一条正好是落地后章节栏加说明卡
+ *   要占的位置（chromeBottom 量的就是它，见 layout），所以塔本来就没画到那儿，
+ *   题签落进去谁也不挡。落地时题记淡出、说明卡淡入，同一条带子里换东西，
+ *   塔一个像素都不动。立轴的引首就是这么做的。
+ *
+ * 三、梁思成那段引文撤了（lara 2026-08-27）。材料本身是全篇最硬的一条一手
+ *   文献（1933 年信，《大公报》），撤掉不是因为它不好，是因为开篇要短 ——
+ *   它一段占了两百多像素，撑得这一屏必须盖住半个塔。取证留在
+ *   题咏与匾额-取证.md 里，将来想用有现成的。
+ *
+ * 为什么「入塔」要等塔立定：塔还在长的时候给一个「进去」的按钮，等于请人
+ * 打断正在发生的事。而且提前按会把半截的塔瞬间钉到满高（ovtEnter 里那句
+ * quietTime），画面上是一跳。等它自己长完，按钮再来。
+ *
+ * 为什么要点一下、不自己走：一段题记读多久因人而异，自动跳会把人从字里拽
+ * 出来。而且开篇是这件作品唯一一个「进去」的动作，让它由手做出来。
+ * ------------------------------------------------------------------- */
+/* 这一层整体不吃点击 —— 它铺满全屏只是为了定位，真正有东西的只有下缘那一条。
+   要是整层吃点击，顶栏那两枚开关就按不到了，而声音开关在开篇恰恰是有用的。
+   所以只有 .ovt-in 接手势，而且只在第三拍（见下面）。 */
+.ovt{position:absolute;inset:0;z-index:10;pointer-events:none}
+/* 帘子：只在下缘那一条。高度由 JS 按字块实测（fitOvtVeil），不写百分比 ——
+   写 62% 的那一版把塔的下面三分之一都洗白了，副阶和台基（全塔最宽最好看的
+   一段）糊成一片雾。现在只比字块高出一道 76px 的缓坡：坡上是塔，坡下是纸，
+   字永远落在实纸上，塔只被那一道坡碰到。
+   为什么不做成 .ovt-in 的 ::before：.ovt-in 是可滚的（矮屏兜底），
+   overflow 会把伸到自己上面去的伪元素裁掉。所以它得是个兄弟节点。 */
+.ovt-veil{position:absolute;left:0;right:0;bottom:0;height:280px;
+  pointer-events:none;opacity:0;transition:opacity 1.6s ease;
+  background:linear-gradient(to bottom,
+    rgba(246,241,224,0) 0, rgba(246,241,224,.42) 34px,
+    rgba(246,241,224,.88) 62px, var(--w0) 76px);}
+#app.is-ovt-2 .ovt-veil,#app.is-ovt-3 .ovt-veil{opacity:1}
+/* 字块坐在下缘。二拍之前它在原位下面 30px 且全透，二拍把它放回原位 ——
+   「缓缓往上浮现」就是这一条 transition，1.6 秒，慢到能看出是在浮。
+   矮机器（SE 一代 568、横过来 460）装不下就滚：宁可滚，不能把「入塔」挤出
+   屏幕外面 —— 那是这一屏唯一的出口，看不见就等于卡死了。 */
+/* 整块字的下缘抬 22px，让出署名那一条（.ovt-by 是兄弟节点，钉在真正的底边）。
+   抬的是这个盒子本身，不是给它加下内边距 —— 「入塔」是 sticky 的，sticky 贴的
+   是滚动容器的 padding box，加内边距拦不住它，而给它设 bottom:24px 又会把它从
+   正文末行上面顶过去（量出来正文和键之间从 +15px 变成 -7px，正好压住最后一行）。
+   把盒子整个抬起来，盒内一切照旧，署名住在盒子外面那条带子里。 */
+.ovt-in{position:absolute;left:0;right:0;bottom:calc(var(--sa-b) + 22px);
+  max-height:calc(100% - var(--bar-t) - var(--sa-t) - var(--sa-b) - 22px);
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  overscroll-behavior-y:contain;
+  padding:0 26px 18px;
+  font-family:var(--mincho);color:var(--ink3);
+  opacity:0;transform:none;
+  transition:opacity 1.6s ease,transform 1.6s cubic-bezier(.16,.84,.28,1);}
+/* 一拍：在原位下面待着。落地时不写 transform，所以它是就地淡出，
+   不会一边往下沉一边跟浮上来的说明卡打架。 */
+#app.is-ovt-1 .ovt-in{transform:translateY(30px)}
+#app.is-ovt-2 .ovt-in,#app.is-ovt-3 .ovt-in{opacity:1;transform:none}
+#app.is-ovt-3 .ovt-in{pointer-events:auto;cursor:pointer}
+/* 题名用塔上那块匾的字。三层的「释迦塔」是金代旧物、塔上最古的一方，
+   而且正是它把全名记录下来的 —— 拿它当引首的题名，字是从这座塔上取的，
+   不是我起的。底下那行小字交代它的来处，不然读者会以为是装饰。
+   字号和间距按「整块正好落在下缘那条带子里」调的：带子约二百二十像素
+   （章节栏 + 收起的说明卡 + 那条进度轨），字块超出去就会啃到塔的台基。 */
+.ovt-t{font-size:22px;letter-spacing:6px;color:var(--ink);
+  line-height:1;margin-bottom:6px;}
+.ovt-tsub{font-size:9px;line-height:14px;letter-spacing:1.6px;color:var(--ink2);
+  margin-bottom:11px;}
+.ovt-rule{width:26px;height:1px;background:var(--rule2);margin-bottom:11px}
+.ovt-p{font-size:12.5px;line-height:22px;letter-spacing:.5px;
+  text-align:justify;}
+/* 「入塔」：落地那一下。放在最下面、居中，朱色一枚 —— 全篇的朱都在标注印上，
+   这里同一个红，读者一眼知道它是可以按的那一件。
+   只有第三拍才出现，所以它自己就是「开篇讲完了」这个信号，不用另写提示。 */
+/* sticky 而不是普通块：矮屏（横过来 420 高）字块装不下要滚，滚起来这颗
+   在最底下就滑出容器外面了 —— 而它是这一屏唯一的出口，看不见等于卡死。
+   钉在容器底边，滚到哪儿它都在。背景给一小块纸，不然滚上来的字会从它身下
+   穿过去。 */
+.ovt-go{display:block;margin:16px auto 0;position:sticky;bottom:0;
+  font-family:var(--mincho);font-size:12.5px;letter-spacing:4px;
+  color:var(--accent);background:var(--w0);border:0;
+  border-bottom:1px solid var(--accent);padding:4px 10px 5px;
+  cursor:pointer;opacity:0;pointer-events:none;transition:opacity .9s ease;}
+#app.is-ovt-3 .ovt-go{opacity:1;pointer-events:auto}
+.ovt-go:active{opacity:.5}
+
+/* 署名。整篇只出现在开篇这一屏：读者必须按「入塔」才能往下走，所以这一眼是
+   留得住的，而正文五章一格都不占（顶栏已经有題名 + 五枚开关，390 宽塞不下；
+   底下那五个章节键是拇指区，更不能动）。落地之后随 .ovt 整层退掉。
+   跟着 .ovt 的 pointer-events:none 走 —— 它是署名，不是可以按的东西。 */
+.ovt-by{position:absolute;left:0;right:0;bottom:calc(var(--sa-b) + 5px);
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  font-family:var(--sans);font-size:9px;letter-spacing:2.4px;color:var(--ink2);
+  opacity:0;transition:opacity 1.6s ease;}
+#app.is-ovt-2 .ovt-by,#app.is-ovt-3 .ovt-by{opacity:.7}
+.ovt-logo{height:12px;width:auto;display:block}
+
+/* 开篇没落地之前，这一页只有塔和字。导航、进度轨、纪年轨、说明卡、塔身上的
+   标注一律不出现 —— 「先把下面的其一其二啥的都隐藏起来」。
+   用 translateY 而不是 display:none：章节栏是从下面浮上来的，位置得是连续的，
+   而 layout() 量取景带时也要量得到它 —— 量得到才有下缘那条带子，题签才有地方落。 */
+#app.is-ovt .chap{transform:translateY(100%);opacity:0;pointer-events:none;
+  transition:transform .62s cubic-bezier(.22,.68,.24,1),opacity .5s ease;}
+.chap{transition:transform .62s cubic-bezier(.22,.68,.24,1),opacity .5s ease}
+#app.is-ovt footer,#app.is-ovt .era,#app.is-ovt .fixrail,
+#app.is-ovt .pins,#app.is-ovt .plumb,#app.is-ovt .striphold,#app.is-ovt #pinBtn{
+  opacity:0;pointer-events:none;}
+/* 说明卡要 visibility:hidden 不能只给 opacity:0：那三张卡里有 pointer-events:auto
+   的子元素，父级说 none 子级还能自己要回来（原来那段注释就是为这件事写的）。
+   开篇期间启动那趟 setChapter(0) 已经把「其一」的卡摆成 .on 了，光靠透明度
+   它还在吃点击。 */
+#app.is-ovt .cutnote,#app.is-ovt .leancard,#app.is-ovt .fixcard{
+  opacity:0;pointer-events:none;visibility:hidden;}
+/* 阶段小牌（「层层斗栱」那种）在第一拍照旧走：它跟建塔动画是一件事。
+   第三拍塔已经立定，牌子本来就 gone 了。 */
+
+/* ---------- 标注：塔身上的编号圆点 ---------- *
+ * v5 是「圆点 + 折线 + 标签」，标签要占掉画面两侧各 100px 的沟。竖屏没有
+ * 这条沟，所以标签退回锚点本身，成为一颗能点的编号。点开进 sheet 读全文。
+ * ------------------------------------------------------------------- */
+.pins{position:absolute;inset:0;z-index:7;pointer-events:none}
+.pins svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+/* 一枚朱印。
+   v7 之前是白圆片 + Arial 粗体数字 + 投影，地图 App 的记号，压在素絹上格外
+   扎眼（lara 2026-08-26：「太出戏了，破坏美感」）。中间试过一版方章配宋体
+   天干，形对了但字读不出序；lara 2026-08-27 定下来：数字保留，印章的做法留着。
+   四件事在起作用：
+   一、方而不圆。圆片是控件，方框是印，跟右上角那枚「遼」同族。
+   二、平时留白，选中才落朱。这一条 2026-08-27 翻过一次：上一版做成平时朱底白字
+     （跟「遼」一样），lara「红色的有点太抢眼了，底色还是之前那种白色略透明的」。
+     她说得对，而且原因是数量 —— 「遼」只有一枚，印有五枚，同一个朱色乘以五就
+     不是点睛而是花脸了，尤其它们全压在塔身上，塔本身是这张画的主体。
+     所以回到 v6 那个浅底（rgba(248,244,228,.90)，白而略透，木色微微透上来），
+     但框和字用朱，不用 v6 那圈灰边 —— v6 灰边的毛病是既不像印也不像控件，
+     灰得跟木色糊在一起（那是 08-26「太出戏了」的一半原因）。
+     朱色退到框线和数字上，读成白文印；选中那一枚翻过来落满朱，成朱文印。
+     一浅四浅里跳一枚实心的，比五枚都实心里再实一枚要清楚得多。
+   三、数字用宋体。Songti 的西文数字是老式的，「1」带衬线、「4」是闭口，
+     排在方框里像旧图版上的条目号，不是 UI 里的角标。
+   四、不用投影。印是盖进纸里的，不浮在纸上 —— v6 那道 box-shadow 就是
+     「贴了张卡片上去」的来源，是「太出戏」的另一半。这一条不回退。 */
+.pin{position:absolute;left:0;top:0;
+  width:24px;height:24px;border-radius:1px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mincho);font-size:13px;font-weight:400;line-height:1;
+  letter-spacing:0;
+  color:#9c3226;
+  background:rgba(248,244,228,.90);
+  border:1px solid #9c3226;
+  cursor:pointer;pointer-events:auto;
+  transition:opacity .3s ease,background-color .2s,color .2s,border-color .2s;}
+/* 24px 在塔身上是对的大小，但拇指要 44：把可点范围往外推，而不是把印画大 */
+.pin::before{content:"";position:absolute;left:-10px;top:-10px;
+  width:44px;height:44px;}
+.pin.gone{opacity:0;pointer-events:none}
+/* 选中那一枚落满朱（朱文印）：四枚留白里出现一枚实心的，一眼就是它。 */
+.pin.hot{background:#9c3226;color:#f4eeda;border-color:#9c3226}
+/* placePins writes transform inline every frame, so the press state has to be
+   a colour change — a CSS transform here would be overwritten on the next tick.
+   按下去跟选中同一个方向（落朱），松手若真的选中了就停在那儿。 */
+.pin:active{background:#9c3226;color:#f4eeda;border-color:#9c3226}
+
+/* ---------- 铅垂参考线 ---------- *
+ * 576 毫米放在 65 米的塔上就是几个像素，没有旁边那条直的参照，这个数字什么
+ * 也说明不了。v5 在手机上把它整个关了，于是其四变成「一张柱状图，配一座看
+ * 起来很直的塔」。这一版留着。
+ * ------------------------------------------------------------------- */
+.plumb{position:absolute;inset:0;pointer-events:none;z-index:5;opacity:0;
+  transition:opacity .45s ease;}
+.plumb.on{opacity:1}
+.plumb svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+/* 这一处不跟着夜翻：读数写在一块 --pl-a 的浅牌子上（见 buildPlumb 的 plate），
+   牌子不随时辰变色，所以字照旧是朱的。翻的是画在天上的那几笔线和点。 */
+.plumb text{font-family:var(--mincho);font-size:10px;
+  letter-spacing:1px;fill:var(--accent);}
+
+/* ---------- 营造阶段小牌 ---------- */
+.plaque{position:absolute;transform:translate(-50%,-50%);z-index:6;
+  font-family:var(--mincho);font-weight:400;font-size:10.5px;
+  /* 这块小牌贴在天上，没有底 —— 走 --air 那一套，夜里按「重营」重看建塔
+     的时候它才读得出（见样式表顶上那段注） */
+  letter-spacing:2px;color:var(--air);white-space:nowrap;
+  pointer-events:none;transition:opacity .55s ease,color .8s ease;}
+.plaque em{display:none}
+.plaque.gone{opacity:0}
+/* 其五不给阶段名：这一章的塔不在营造，牌子上写「层层斗栱」是错的 */
+#app.fix .plaque{opacity:0}
+
+/* ---------- 其一：按住拆 ---------- *
+ * 收起状态下卡片只露到深度尺，手势得在卡外面才按得到；同时要够低，
+ * 按住这件事是拇指的活。所以贴在方案轨上面一档 —— 底下那道纸色渐变
+ * 正好也把塔基压住了，字压在塔上还读得清。
+ * ------------------------------------------------------------------ */
+.striphold{position:absolute;left:50%;transform:translateX(-50%);z-index:9;
+  bottom:calc(var(--sa-b) + var(--tab-h) + var(--peek-fix)
+              + var(--strip-h) + 10px);
+  height:30px;padding:0 15px;border-radius:15px;
+  background:var(--pl-a);border:1px solid var(--rule2);
+  font-family:var(--mincho);font-weight:400;
+  font-size:11px;letter-spacing:2.4px;color:var(--ink2);
+  white-space:nowrap;cursor:default;
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
+  opacity:0;pointer-events:none;
+  transition:opacity .3s ease,color .25s ease,border-color .25s ease;}
+/* 演的时候它只是个读数，不该长得像必须按的开关；只有演完那一态可点。 */
+.striphold.on{opacity:.82}
+.striphold.hot{opacity:.82;color:var(--ink2)}
+/* 榫口不合 —— 这一格的结论，用其五的强调色说，同时它才变成「再看一遍」 */
+.striphold.jam{opacity:1;pointer-events:auto;cursor:pointer;
+  color:var(--accent);border-color:var(--accent);letter-spacing:3px}
+.striphold.jam:active{background:rgba(125,59,46,.08)}
+
+/* ---------- 滑动提示：进其四时出现一次 ---------- */
+.hint{position:absolute;left:50%;z-index:9;
+  bottom:calc(var(--sa-b) + var(--tab-h) + var(--peek-lean) + 18px);
+  transform:translateX(-50%);
+  font-family:var(--mincho);font-size:12px;letter-spacing:2.4px;
+  color:#f6f1e0;background:rgba(43,42,34,.82);
+  padding:8px 15px;border-radius:16px;white-space:nowrap;
+  opacity:0;pointer-events:none;transition:opacity .5s ease;}
+.hint.on{opacity:1}
+
+/* ---------- bottom sheet：两张卡共用的外壳 ---------- *
+ * 露出 peek 的高度（标题 + 第一段），拖住上缘或点一下展开到 62vh 读全文。
+ * data-peek 让 layout() 知道该按多高给塔留取景带 —— 展开时塔不动，只是被
+ * 盖住，否则每次开卡片塔都要跳一下。
+ * ------------------------------------------------------------------- */
+.cutnote,.leancard,.fixcard{
+  position:absolute;left:0;right:0;z-index:8;
+  bottom:calc(var(--sa-b) + var(--tab-h));
+  font-family:var(--mincho);color:var(--ink3);
+  background:linear-gradient(var(--pl-a),var(--pl-b));
+  border-top:1px solid var(--pl-br);
+  box-shadow:0 -2px 14px rgba(70,58,40,.13);
+  padding:20px 18px 14px;
+  max-height:var(--peek-cut);overflow:hidden;
+  opacity:0;transform:translateY(14px);pointer-events:none;
+  /* visibility, not just pointer-events: the two sheets now occupy the same
+     rectangle, and .cn-back / .ln-tools button both set pointer-events:auto,
+     which a child can do even when the parent said none. So the sheet that was
+     not showing still ate the taps meant for the one that was — 回到剖切說明 was
+     unclickable because an invisible 復現傾斜 was sitting on top of it.
+     visibility:hidden takes the whole subtree out of hit testing and a child
+     cannot opt back in. */
+  visibility:hidden;
+  transition:opacity .38s ease,transform .38s ease,max-height .38s ease,
+             visibility .38s ease;
+  /* 收起时 none：这张卡收起来是 overflow:hidden，没有东西可滚，pan-y 只会把
+     竖向手势让给浏览器的滚动判定，手指刚动就可能吃到一发 pointercancel ——
+     手上的感觉就是「向上滑动不太灵敏」（lara 2026-08-27）。收起时竖向手势
+     整个归我们，展开之后再让回去（见下一条），那时正文真的要滚。 */
+  touch-action:none;
+  -webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;}
+.leancard{max-height:var(--peek-lean)}
+.fixcard{max-height:var(--peek-fix)}
+.cutnote.on,.leancard.on,.fixcard.on{opacity:1;transform:none;pointer-events:auto;
+  visibility:visible;}
+#app.sheet-open .cutnote,#app.sheet-open .leancard,#app.sheet-open .fixcard{
+  max-height:62vh;overflow-y:auto;touch-action:pan-y;}
+/* 上缘那道抓手 */
+.cutnote::before,.leancard::before,.fixcard::before{content:"";
+  position:absolute;left:50%;top:8px;transform:translateX(-50%);
+  width:34px;height:4px;border-radius:2px;background:var(--rule2);opacity:.7;
+  z-index:2;}
+/* 收起时下缘化开，让截断读成「还有」而不是「没了」 */
+.cutnote::after,.leancard::after,.fixcard::after{content:"";
+  position:absolute;left:0;right:0;bottom:0;height:34px;pointer-events:none;
+  background:linear-gradient(rgba(236,229,208,0),var(--pl-b));
+  transition:opacity .3s ease;}
+#app.sheet-open .cutnote::after,#app.sheet-open .leancard::after,#app.sheet-open .fixcard::after{opacity:0}
+
+.cn-rule,.ln-rule,.fx-rule{height:1px;background:var(--accent);opacity:.6;
+  width:30px;margin-bottom:10px;}
+.cutnote h5,.leancard h5,.fixcard h5{font-family:var(--mincho);font-weight:400;
+  font-size:19px;line-height:1.15;letter-spacing:3px;color:var(--ink);}
+.cn-sub,.ln-sub,.fx-sub{font-size:9.5px;letter-spacing:2.2px;
+  margin-top:6px;margin-bottom:10px;}
+.cn-sub{color:var(--accent)}
+/* 收起状态下这张卡只有 128px，而抬头（红线 + 标题 + 副题）原来要吃掉一半，
+   剩两行正文。lara 2026-08-26：「那个外观的标题占地又很大」。
+   所以收起时把抬头压成一行：红线收掉，标题和副题并到同一条基线上，正文多两行。
+   展开后（.sheet-open）还原成竖排 —— 那时候有 62vh，抬头值得占地方。
+   用 grid 而不是包一层 div：这三张卡的 innerHTML 是四处 render 函数各自拼的，
+   改结构要动四个地方，而 h5 和 .cn-sub 本来就是相邻兄弟，网格摆位够了。
+   ::before（抓手）和 ::after（下缘渐隐）是绝对定位的，不进网格。 */
+#app:not(.sheet-open) .cutnote{display:grid;grid-template-columns:auto 1fr;
+  align-items:baseline;column-gap:11px;padding-top:15px;}
+#app:not(.sheet-open) .cutnote>*{grid-column:1/-1}
+#app:not(.sheet-open) .cutnote .cn-rule{display:none}
+#app:not(.sheet-open) .cutnote h5{grid-column:1;font-size:17px;letter-spacing:2.2px}
+#app:not(.sheet-open) .cutnote .cn-sub{grid-column:2;margin:0}
+.ln-sub{color:var(--ink2)}
+.ln-y{font-family:var(--sans);font-size:9.5px;font-weight:700;
+  letter-spacing:2px;color:var(--accent);margin-bottom:5px;}
+.cutnote p,.leancard p,.fixcard p{font-size:12.5px;line-height:23px;
+  letter-spacing:.8px;margin-bottom:8px;}
+.cn-fig{display:flex;gap:15px;margin-top:12px;padding-top:10px;
+  border-top:1px solid var(--hairline);}
+.cn-fig div{font-size:9px;letter-spacing:1.2px;color:var(--ink2);line-height:14px}
+.cn-fig b{display:block;font-family:var(--mincho);font-weight:400;
+  font-size:15px;letter-spacing:.4px;color:var(--ink);margin-bottom:2px;}
+.cn-hint{margin-top:12px;font-size:9.5px;letter-spacing:1.8px;
+  color:var(--ink2);opacity:.85;}
+/* Focusing a part zooms the tower, so the pin you tapped may now be off-screen
+   and this is the only way back. It sits at the end of a note that is longer
+   than the sheet, so it sticks to the bottom edge rather than waiting to be
+   scrolled to. */
+/* 收起时不给：peek 只有 128px，塞进一颗 44px 的键就是它坐在正文第二行上。
+   而它 sticky 在底边，收起时那道 border-top 正好切在一行字中间 —— 手机上
+   看到的「分割线和整体内容重叠了」就是这个（lara 2026-08-27）。
+   现在收起时整张卡点哪儿都能展开（见 app.js 第 12 节），展开之后有 62vh，
+   这颗键才有自己的一条带子。 */
+#app:not(.sheet-open) .cn-back{display:none}
+.cn-back{position:sticky;bottom:0;z-index:3;
+  display:block;width:100%;margin-top:12px;
+  font-family:var(--mincho);font-size:12px;
+  letter-spacing:2px;color:var(--accent);
+  /* 实色，不能半透。原来上半截是 rgba(...,.55)，而它是钉在底边、身下有正文
+     在滚的东西 —— 半透的 sticky 就是让正文从按钮里透出来。 */
+  background:var(--pl-b);
+  border:0;border-top:1px solid var(--hairline);
+  min-height:44px;padding:0 12px;cursor:pointer;pointer-events:auto;
+  text-align:left;}
+/* 键上面那道化开的坡：正文滚到它身下时截断读成「还有」，而不是被一刀切平。
+   坡放在键外面（bottom:100%），所以它不会跟那道分割线抢同一像素。 */
+.cn-back::before{content:"";position:absolute;left:0;right:0;bottom:100%;
+  height:18px;pointer-events:none;
+  background:linear-gradient(rgba(236,229,208,0),var(--pl-b));}
+.cn-back:active{color:var(--ink)}
+
+/* 傾斜卡里的五层柱状图：哪一层在歪，一眼就看得出来 */
+.ln-prof{margin-top:12px;padding-top:10px;border-top:1px solid var(--hairline)}
+.ln-row{display:flex;align-items:center;gap:7px;height:14px;
+  font-size:9px;letter-spacing:.5px;color:var(--ink2);}
+.ln-row span:first-child{width:24px;flex:0 0 auto}
+.ln-row i{display:block;height:3px;background:var(--ink2);opacity:.42;
+  flex:0 0 auto;transition:width .5s ease;min-width:1px;}
+.ln-row.worst i{background:var(--accent);opacity:.85}
+.ln-row em{font-style:normal;font-family:var(--sans);font-size:8.5px;
+  color:var(--ink3);opacity:.8;}
+.ln-row.worst em{color:var(--accent);opacity:1}
+.ln-foot{display:flex;align-items:baseline;justify-content:space-between;
+  gap:9px;margin-top:10px;padding-top:9px;border-top:1px solid var(--hairline);}
+.ln-foot b{font-family:var(--mincho);font-weight:400;font-size:13px;
+  letter-spacing:1.2px;color:var(--ink);}
+.ln-src{font-size:9px;letter-spacing:1.6px;color:var(--ink2);flex:0 0 auto}
+.ln-tools{display:flex;align-items:center;gap:7px;margin-top:11px}
+.ln-tools button{font-family:var(--mincho);font-size:12px;letter-spacing:1.4px;
+  color:var(--ink2);background:none;border:1px solid var(--hairline);
+  border-radius:2px;min-height:36px;min-width:38px;padding:0 11px;
+  cursor:pointer;pointer-events:auto;}
+.ln-tools button:active{opacity:.6}
+.ln-tools .ln-x{margin-left:auto;font-family:var(--sans);font-weight:700;
+  letter-spacing:.6px;}
+.ln-tools .ln-x.up{color:var(--accent);border-color:var(--accent)}
+
+/* ---------- 纪年轨：九个刻度，只标当前那一年 ---------- *
+ * 九个日期横排在 390px 里是每个 43px，一定挤成一团。所以轨道上平时只有点，
+ * 年份跟着当前那一格走。真正的操作是在塔上横向滑动，这条轨是读数。
+ * ------------------------------------------------------------------- */
+.era{position:absolute;left:0;right:0;z-index:7;
+  bottom:calc(var(--sa-b) + var(--tab-h) + var(--peek-lean));
+  height:var(--strip-h);padding:14px 0 0;
+  opacity:0;pointer-events:none;transition:opacity .45s ease;
+  touch-action:none;}
+.era.on{opacity:1;pointer-events:auto}
+/* 纪年轨整条浮在天上，所以走 --air 那一套（见样式表顶上那段注） */
+.era-line{position:absolute;left:20px;right:20px;top:16px;height:1px;
+  background:var(--air-l);transition:background .8s ease;}
+.era-prog{position:absolute;left:20px;top:16px;height:1px;
+  background:var(--air-a);opacity:.8;width:0;
+  transition:width .35s ease,background .8s ease;}
+.era-pt{position:absolute;top:4px;transform:translateX(-50%);
+  background:none;border:0;padding:0;cursor:pointer;
+  /* 5px 的点配 26px 的可点范围 */
+  width:26px;height:26px;
+  display:flex;flex-direction:column;align-items:center;
+  font-family:var(--sans);font-size:8.5px;font-weight:700;letter-spacing:.2px;
+  color:var(--air-a);line-height:1;transition:color .8s ease;}
+.era-pt i{display:block;width:5px;height:5px;border-radius:50%;
+  background:var(--air-l);font-style:normal;flex:0 0 auto;
+  margin-top:9px;transition:background .25s,box-shadow .25s,transform .25s;}
+.era-pt span{display:none;margin-top:5px;white-space:nowrap}
+.era-pt b{display:none}
+.era-pt.done i{background:var(--air-a);opacity:.5}
+.era-pt.hot i{background:var(--air-a);opacity:1;transform:scale(1.25);
+  box-shadow:0 0 0 4px rgba(125,59,46,.16);}
+.era-pt.hot span{display:block}
+/* 只有记述、没有实测的那几格画成空心 */
+.era-pt.soft i{background:none;border:1px solid var(--air-l)}
+.era-pt.soft.done i{border-color:var(--air-a)}
+
+/* ---------- 其五：四个方案 ---------- *
+ * 纪年轨是时间，一条线上九个点，从左往右只有一个方向。方案轨不是：四个并列
+ * 的选项，谁也不在谁后面，所以画成四段等宽的闸，而不是一条带进度的线。
+ * 相机在这一章锁死 —— 塔一个像素都不动，滑动只换被动到的部分。眼睛对同一
+ * 位置上的变化远比并排比对敏感，这是竖屏唯一能赢桌面的地方。
+ * ------------------------------------------------------------------- */
+.fixrail{position:absolute;left:0;right:0;z-index:7;
+  bottom:calc(var(--sa-b) + var(--tab-h) + var(--peek-fix));
+  height:var(--strip-h);padding:0 16px;
+  display:flex;align-items:center;gap:6px;
+  opacity:0;pointer-events:none;transition:opacity .45s ease;}
+.fixrail.on{opacity:1;pointer-events:auto}
+/* 落架那一格塔只剩两层，方案名正好落在塔基上，读不清。垫一层纸色渐变，
+   跟顶栏同一个做法：不画框，只把字下面的地压住。 */
+.fixrail::before{content:"";position:absolute;inset:-8px 0 -6px;
+  background:linear-gradient(rgba(232,224,204,0),var(--paper) 62%);
+  pointer-events:none;}
+.fixrail button{position:relative}
+.fixrail button{flex:1 1 0;min-width:0;min-height:38px;
+  background:none;border:0;padding:0;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:6px;}
+/* 每一格头上一道闸：它的长度就是这个方案要动的深度 */
+.fx-gate{display:block;width:100%;height:2px;background:var(--track);
+  position:relative;overflow:hidden;}
+.fx-gate::after{content:"";position:absolute;left:0;top:0;bottom:0;
+  width:var(--fx-d,0%);background:var(--rule2);transition:width .5s ease;}
+.fixrail button.hot .fx-gate::after{background:var(--accent)}
+/* 四格进 390：每格约 97，四字名连字距占 56 左右，字距用回 1.4。
+   （2026-08-27 上午一度是五格，收到 0.6 才塞得下；第五格撤了就还回来。） */
+.fixrail button b{font-family:var(--mincho);font-weight:400;
+  font-size:12px;letter-spacing:1.4px;color:var(--ink2);
+  white-space:nowrap;line-height:1;}
+.fixrail button.hot b{color:var(--accent)}
+
+/* 干预深度那条尺。放在卡片收起就能看见的高度上：方案名旁边必须同时有
+   「要动多少」，否则四个名字读起来一样重。 */
+.fx-depth{margin-top:12px;padding-top:10px;
+  border-top:1px solid var(--hairline);}
+.fx-dline{display:flex;align-items:center;gap:8px}
+.fx-dbar{position:relative;flex:1 1 auto;height:3px;background:var(--track)}
+.fx-dbar i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);
+  opacity:.85;transition:width .5s ease;}
+.fx-dnum{font-family:var(--sans);font-size:8.5px;font-weight:700;
+  letter-spacing:.4px;color:var(--accent);flex:0 0 auto;}
+.fx-dlab{font-size:9px;letter-spacing:1.6px;color:var(--ink2);
+  margin-top:6px;}
+/* 支持与反对：两栏对读，不下结论 */
+.fx-arg{margin-top:11px;padding-top:10px;
+  border-top:1px solid var(--hairline);
+  display:flex;flex-direction:column;gap:9px;}
+.fx-arg div{font-size:10.5px;line-height:18px;letter-spacing:.6px;
+  color:var(--ink3);}
+.fx-arg em{font-style:normal;display:block;font-size:8.5px;
+  letter-spacing:2px;color:var(--ink2);margin-bottom:3px;}
+.fx-arg .fx-no em,.fx-arg .fx-adv em{color:var(--accent)}
+/* 建议自己带一行出处：字号退到跟 fx-src 一样，它是注不是正文 */
+.fx-advsrc{display:block;margin-top:6px;
+  font-size:9px;line-height:15px;letter-spacing:1.2px;color:var(--ink2);}
+.fx-src{margin-top:11px;padding-top:9px;
+  border-top:1px solid var(--hairline);
+  font-size:9px;line-height:15px;letter-spacing:1.2px;color:var(--ink2);}
+
+/* ---------- 营造进度：其一那条细轨 ---------- *
+ * 只在塔正在长的那几秒里出现。
+ *
+ * 2026-08-27：lara 看到它问「这个红线和左边那个圆圈是啥，好像是第四章的时间线？
+ * 怎么会出现在其他章节啊」。她认成其四的纪年轨是对的 —— 两条轨占同一个位置、
+ * 同样一道 1px、同样朱色的填充（.era-line / .era-prog 在上面），完全是一个东西
+ * 的样子。而且塔建完之后这条轨是满的，一条通到底的朱线，看不出是进度。
+ *
+ * 更要紧的是它在 v8 的流程里根本没有活着的时候：塔那 4.4 秒是在开篇里长的
+ * （#app.is-ovt 把 footer 藏着），长完了「入塔」才亮。读者点进正文时 tt 已经
+ * 是 DUR 了。所以它从第一天起就只以「满格」这一个状态出现过。
+ *
+ * 现在：塔立定就退（.built），其二以后不出现（.chap-alt）。按顶栏的「重营」
+ * 塔从头长，它跟着回来 —— 有东西可拖的时候在，没有的时候不在。
+ * ------------------------------------------------------------------- */
+footer{position:absolute;left:0;right:0;z-index:7;
+  bottom:calc(var(--sa-b) + var(--tab-h) + var(--peek-cut));
+  height:var(--strip-h);padding:0 16px;
+  display:flex;align-items:center;gap:12px;
+  transition:opacity .3s ease;}
+/* 塔立定，进度轨退场。opacity 不用 display:none —— chromeBottom() 要量它的
+   高度给塔留取景带，撤掉的话塔会在立定那一帧往下跳一截。 */
+#app.built footer{opacity:0;pointer-events:none}
+/* 其二起每一章开头都会把塔推到建完（setChapter 里那句 quietTime(DUR)），所以
+   这条轨在别的章节里永远是满的死物 —— 一律不出现，位置让给纪年轨和方案轨。 */
+#app.chap-alt footer{opacity:0;pointer-events:none}
+/* 其五不是一段时间，纪年轨在这一章不出现 */
+#app.fix .era{opacity:0;pointer-events:none}
+.track{position:relative;flex:1 1 auto;height:26px;cursor:pointer;
+  display:flex;align-items:center;touch-action:none;}
+.track::before{content:"";position:absolute;left:0;right:0;top:50%;
+  height:1px;background:var(--track);}
+.fill{position:relative;height:1px;background:var(--fillc);opacity:.6;width:0}
+.time{display:none}
+
+/* ---------- 底部章节栏 ---------- *
+ * v5 把这四章放在左栏一行 18px 的小字里。这是全篇最主要的导航，在手机上
+ * 它该在拇指够得到的地方，并且大到不用瞄。
+ * ------------------------------------------------------------------- */
+.chap{position:absolute;left:0;right:0;bottom:0;z-index:9;
+  height:calc(var(--tab-h) + var(--sa-b));
+  padding-bottom:var(--sa-b);
+  display:flex;align-items:stretch;
+  background:var(--paper);border-top:1px solid var(--hairline);}
+.chap button{flex:1 1 0;min-width:0;
+  background:none;border:0;border-top:2px solid transparent;
+  font-family:var(--mincho);color:var(--ink2);cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4px;padding:0;
+  transition:color .2s ease,border-color .2s ease;}
+.chap button:active{background:rgba(125,59,46,.06)}
+.chap i{font-style:normal;font-size:9px;letter-spacing:1.4px;
+  line-height:1;opacity:.75;}
+.chap b{font-weight:400;font-size:21px;line-height:1;letter-spacing:1px}
+.chap button.hot{color:var(--accent);border-top-color:var(--accent)}
+.chap button.hot i{opacity:1}
+
+/* 聚焦单件时画面被塔占满，其余家具退后；导航是出口，不退 */
+#app.zoom .col-l,#app.zoom .col-r{opacity:.14}
+/* 开篇还在看引首的时候，右缘的章号不出现 —— lara 2026-08-27「封面出现释迦塔
+   的时候，右上角的其一塔是不是没必要出现。等到入塔后再出现」。用 opacity 而不
+   是 display:none，layout() 不量这一块。 */
+#app.is-ovt .col-r{opacity:0;transition:opacity .6s ease .3s}
+.col-l,.col-r{transition:opacity .4s ease}
+
+/* 极窄的机器（SE 一代 320）把顶栏的印子再收一点 */
+@media (max-width:340px){
+  .tbtn{font-size:10.5px;padding:0 5px 0 7px;letter-spacing:1px}
+  .brand{font-size:16px;letter-spacing:2.4px}
+  .chap b{font-size:19px}
+  /* SE 一代 320×568：题记那一屏在 568 高里也紧，边距和字距一起收 */
+  .ovt-in{padding:0 20px calc(var(--sa-b) + 22px)}
+  .ovt-t{font-size:23px;letter-spacing:5px}
+  .ovt-tsub{letter-spacing:1.2px}
+  .ovt-p{font-size:12px;line-height:22px}
+  .ovt-q{font-size:11.5px;line-height:21px}
+}
+/* 横过来的时候取景带很矮，诗和竖排让位给塔。
+   这一版是按竖屏设计的 —— 塔本来就是高瘦的，竖屏是它的形状。横屏不追求同等
+   效果，只保证不塌：卡片收起时露得更少，展开时也留一截塔在上面，而不是整屏
+   都被文字盖掉。 */
+@media (max-height:460px){
+  .col-l,.col-r{display:none}
+  /* 上面那行是给正文用的：横屏取景带很矮，诗和竖排让位给塔。但开篇第一拍还没有
+     正文可让 —— 那四行是引子，横屏也得有，不然横过来打开就是一座默默在长的塔，
+     一个字也没有。只在第一拍放开。 */
+  #app.is-ovt-1 .col-l{display:block}
+  /* 题记那一屏在 460 高里装不下 413 —— 收一档，同时 .ovt-in 自己会滚（见上面），
+     两条一起才保证「入塔」在屏幕上。 */
+  .ovt-in{padding:0 20px calc(var(--sa-b) + 14px)}
+  .ovt-t{font-size:20px;letter-spacing:5px;margin-bottom:5px}
+  .ovt-tsub{margin-bottom:10px}
+  .ovt-rule{margin-bottom:10px}
+  .ovt-p{line-height:20px}
+  .ovt-q{margin-top:11px;line-height:19px}
+  .ovt-go{margin-top:15px}
+  :root{--tab-h:52px;--strip-h:36px;--peek-cut:96px;--peek-lean:112px;--peek-fix:120px}
+  .chap b{font-size:18px}
+  /* 五个 tab 挤进 480 宽：字号收一档，编号那行去掉 */
+  .chap i{display:none}
+  #app.sheet-open .cutnote,#app.sheet-open .leancard,#app.sheet-open .fixcard{max-height:68vh}
+  .cutnote,.leancard,.fixcard{padding:18px 18px 12px}
+  .cutnote p,.leancard p,.fixcard p{line-height:21px}
+}
+</style>
+
+</head>
+<body>
+
+<div id="app">
+  <div class="bg-wash"></div>
+  <canvas id="stage"></canvas>
+  <div class="flash" id="flash"></div>
+  <div class="bg-grid2"></div>
+
+  <header>
+    <div class="brand">應縣木塔</div>
+    <div class="top-mid">佛宫寺释迦塔&nbsp;/&nbsp;辽&nbsp;1056</div>
+    <div class="top-right">
+      <!-- 标注 / 天候 / 时 / 音：只画当前那一态，不写字（见 app.js 第 9b 节 ICONS）。
+           内容由 setIcon 填，这里留空。 -->
+      <button class="ibtn" id="pinBtn" data-icon="pin" type="button" aria-label="LABELS: ON"></button>
+      <button class="ibtn" id="wxBtn" data-icon="wx" type="button" aria-label="WEATHER: CLEAR"></button>
+      <button class="ibtn" id="timeBtn" data-icon="time" type="button" aria-label="TIME: MORNING"></button>
+      <button class="ibtn" id="soundBtn" data-icon="sound" type="button" aria-label="SOUND: ON"></button>
+      <button class="tbtn" id="rebuildBtn" aria-label="重营">↻</button>
+    </div>
+  </header>
+
+  <div class="col-l">
+    <div class="eyebrow">FRAME / 365</div>
+    <div class="big-cn">營造</div>
+    <div class="sub-cn">SAKYAMUNI&nbsp;PAGODA&nbsp;GROWTH&nbsp;STUDY</div>
+    <div class="quote">
+      <div><i>塔五層六檐，八角攢尖。</i></div>
+      <div><i>明層之間藏暗層四道，</i></div>
+      <div><i>斜戧交撐，如環似箍。</i></div>
+      <div><i>曆九百七十年，風雨地震，未傾。</i></div>
+    </div>
+    <div class="pager"><span>67.31</span><span class="bar"></span><span class="dim">METRES</span></div>
+  </div>
+
+  <div class="col-r">
+    <div class="glyphs"></div>
+    <div class="title-cn"><b>其</b><b>一</b><b>·</b><b>塔</b></div>
+    <div class="roman">（应县&nbsp;·&nbsp;辽&nbsp;1056）</div>
+  </div>
+  <div class="tag">ORIGINAL<br>RECONSTRUCTION</div>
+
+  <!-- 开篇的题签。一拍只有 .col-l 里那四行引子，这一条在原位下面待着；
+       半程浮上来，塔立定之后「入塔」才亮。 -->
+  <div class="ovt" id="ovt">
+    <div class="ovt-veil"></div>
+    <div class="ovt-in">
+      <div class="ovt-t">釋迦塔</div>
+      <div class="ovt-tsub">世界上最高的木塔</div>
+      <div class="ovt-rule"></div>
+      <div class="ovt-p" id="ovtP"></div>
+      <button class="ovt-go" id="ovtGo" type="button">入&nbsp;塔</button>
+    </div>
+    <!-- 署名。官网的 wordmark（583×167 PNG，绿六边形 + Moxt），不是自己画的
+         图形。打包版引包内文件；预览版由 build 脚本换成 data: URI，好让那个
+         单文件双击就能看。 -->
+    <div class="ovt-by">
+      <span>在</span>
+      <img class="ovt-logo" src="./assets/moxt-logo.png" alt="Moxt" />
+      <span>制作</span>
+    </div>
+  </div>
+
+  <!-- 剖切的两层说明：塔身上的编号，和 sheet 里的正文 -->
+  <div class="pins" id="pins"><svg id="pinsvg"></svg></div>
+
+  <!-- 傾斜：塔上的铅垂参考，塔下的纪年轨 -->
+  <div class="plumb" id="plumb"><svg id="plumbsvg"></svg></div>
+
+  <div class="hint" id="hint">← 左右滑动，走过九百七十年 →</div>
+
+  <!-- 其五·其一：按住拆 -->
+  <button class="striphold" id="striphold" type="button"
+          aria-label="按住拆解木构架">按住&nbsp;·&nbsp;拆</button>
+
+  <div class="plaque" id="plaque">准备&nbsp;/&nbsp;<em>READY</em></div>
+  <div class="bigpct" id="bigpct"><span id="bigpctNum">0</span><i>%</i></div>
+
+  <!-- 两张卡共用 bottom sheet 的外壳，同一时间只有一张 .on。
+       data-peek 是收起时的高度，layout() 拿它给塔留取景带。 -->
+  <div class="cutnote" id="cutnote" data-peek-var="--peek-cut"></div>
+  <div class="leancard" id="leancard" data-peek-var="--peek-lean"></div>
+  <div class="fixcard" id="fixcard" data-peek-var="--peek-fix"></div>
+
+  <div class="era" id="era">
+    <div class="era-line"></div>
+    <div class="era-prog" id="eraProg"></div>
+  </div>
+
+  <!-- 其五的四个方案轨。和纪年轨同一个位置，但不是时间：四格并列，
+       相机锁死，滑动只换被动到的部分。 -->
+  <div class="fixrail" id="fixrail"></div>
+
+  <!-- 营造进度轨。只在塔正在长的时候出现，见 footer 那段 CSS 的注。
+       原来这里左边还有一枚圆的 ↻ 重放键，2026-08-27 撤了：它和顶栏的「重营」
+       调的是同一个 restart()，一个动作两个按钮，而且那个圆圈是全页唯一的圆形
+       控件，lara 看到时第一反应是「左边那个圆圈是啥」。 -->
+  <footer>
+    <div class="track" id="track"><div class="fill" id="fill"></div></div>
+    <div class="time" id="time">0.00 / 4.40</div>
+  </footer>
+
+  <nav class="chap" id="chap" aria-label="章"></nav>
+</div>
+
+<!--
+  聲音
+  ----
+  music   《空山箫语 · Whisper of Empty Mountains》，RainStreetCat，
+          Pixabay 曲目 428655，發佈 2025-10-30。Pixabay Content License:
+          免費商用、無須署名、無須授權費。作品頁自己標了 AI generated。
+          原檔 3:59 / 256 kbps / 48 kHz 立體聲。
+
+          這裡放的不是原檔。原曲是一首有鋪陳有高潮的完整曲子，段落間起伏
+          十二分貝，當背景床會在旁白底下一陣一陣地湧上來，所以：
+
+          · 取 2.0s–236.5s，兩端各留一截淡入淡出不切掉 —— 循環的接縫就
+            落在這兩截上，兩邊都是同一個安靜的量級（−34.6 / −38.4 dB），
+            差不到四分貝。第一版把淡出接到淡入的中段上，量出來差 8.6 dB，
+            那是一個聽得出來的台階。接縫要接在兩段一樣輕的材料上。
+          · dynaudnorm f=500 g=31 m=3 —— 十五秒的長窗，把十二分貝的起伏
+            壓到七分貝。窗短了會抽氣，m 大了會把 26 秒那個近乎全靜的
+            斷點抬起來，把譜子裡的空白填掉。
+          · 末尾三秒等功率交叉折回開頭，接縫真的接不出來。
+          · 單聲道 32 kHz 56 kbps。單聲道不是為了省字節，是這個檔案裡
+            所有聲音都是單聲道（_toBuf 只給一條聲道），立體聲的樂音混進來
+            會和其餘的聲場對不上。
+          · 整體 RMS −23 dBFS，比原來那張風鐸的床（−20.2 dBFS）低三分貝：
+            連續的樂音比疏落的鈴聲更容易蓋掉字，同樣的 RMS 聽起來更吵。
+
+          循環體 3:51.5，一頁走完 4:40 只過一遍多四十秒，接縫在 3:51 的
+          那個靜谷裡出現一次。約 2.1 MB base64，佔這個檔案一半多。
+          音量在 musicBus（gain 0.5）上調，見 app.js 第 10 節。
+
+          它換掉的是風鐸那張床（_bellBed，app.js 第 10b 節）：十組非諧模態、
+          十一記鈴排在三十秒的譜子上，零字節、真無縫。程式碼還在，
+          __musicDbg() 也還在量它，只是沒有任何 style 再指向 music_feng。
+          再往前是《醉漁唱晚》，古琴獨奏，衛仲樂，1934 年上海百代錄製，
+          母版 A1484 / 唱片編號 34571b，一般認為是中國最早的古琴唱片；
+          公有領域（CC0），archive.org 識別碼 1484193434571bH。那段
+          base64（music_qin，約 285KB）同樣還躺在 audio.js 裡沒人引用 ——
+          刪掉能省 285KB，但先問 lara。
+
+  木頭     lara 2026-08-27 傍晚要的五處。全部在頁面裡合成，零字節，見 app.js
+          第 10b-2 節（合成）和第 10d 節（怎麼被驅動）。
+
+          其一 營造 —— 工地。木料互相敲、榫頭進位、腳手架吃力，加一層極輕的
+            場地空氣。音量不是挂在「跨了一個階段」上，而是每帧跟着塔長高的
+            速度走（driveBuild）。buildHeightAt 每段尾部留了 7% 的停頓，於是
+            一層一層往上、每層收一下的呼吸自己就出來了 —— 量出來峰值 0.89、
+            每到層與層之間落到 0.50 上下。
+          其五 落架大修 —— 同一套機器，兩張床。「逐層解落」用 wood_strip
+            （低頻更多、有落地的悶響、吱嘎更密）；「依次歸安」用營造那張
+            wood_work，而且因為歸安的速度只有拆的 0.62 倍，同一個映射下它自然
+            更輕 —— 裝比拆小心，這一點不用調參數。「唯余台基」那一格收掉
+            （wdCut 0.34 秒），空台基站在保護棚裡的那一秒是真的靜的。
+            「榫口不合」是全篇唯一一記釘在事件上的音效：那裡確實發生了一件
+            離散的事，而且沒成功。一記乾的、不帶餘音的悶響，之後什麼都沒有。
+          其一 / 其三 點註記 —— 指節敲在木頭上。乾、短、輕；音高按簽的序號在
+            E♭ 五聲上小幅上下，只為了連點幾枚不像同一記提示音在重複。
+          其二 珍藏 點註記 —— 磬。lara 說「木魚或者頌鉢」，取磬：頌鉢那一路
+            器物在漢地佛寺裡的本名就是磬，而這一章講的是遼代的佛壇、塑像和
+            《契丹藏》，用漢傳的名字對得上。四枚簽的音高按塔的層數從低到高
+            （一層大佛 E♭4、二層壁畫 G♭4、四層主像 A♭4、五層曼荼羅 B♭4），
+            對着正文那句「從一層的七佛到五層的九位，順着樓梯拜上去，是一條
+            排好順序的禮佛路線」—— 一路點上去就是那條路線。
+          其四 傾斜 —— 塔自己在受力，所以這張床上沒有工地，只有長而低的
+            滑-粘（stick-slip）。音量跟着塔頂偏移的每帧變化量走，手停了它就停；
+            換夸張倍數只改畫面，不出聲。1305 懷仁地震和 1926 軍閥炮擊那兩格
+            多一記低頻開裂加餘振 —— 刻意不做地震的轟鳴也不做炮聲：這一頁的
+            主角是塔，不是那場地震或那場戰鬥，響的該是塔的反應。其餘七格
+            沒有這一記，幾十年的蠕變不該有一個撞擊點。
+
+          音階為什麼是 E♭ 五聲：拿背景音樂《空山簫語》做了一遍 chroma，
+          十二個音裡 E♭ 最強，其餘四個強音正好凑成 E♭ 上的五聲
+          （E♭-G♭-A♭-B♭-D♭，羽調式）。磬和敲擊都放在這個調上，點註記的時候
+          不會和音樂頂。這是量出來的，不是猜的。
+
+          2026-08-26 她說過「塔裝起來和拆除的音效都很奇怪，都不要吧」，那一版
+          當天拆了。這一版是同一個位置上的第二次，先弄清上一版怪在哪才做的：
+          上一版是 ping()，每跨一個階段敲一記，六記大致等距，最後一記換成鐘 ——
+          四點四秒裡六記等距的敲擊不是工地是節拍器，結尾那記鐘是遊戲的過關音。
+          事件式的音效配連續的動作永遠對不上。這一版沒有任何一記聲音釘在時間
+          點上（除了榫口不合那一記，理由見上），也沒有結束音。
+
+  麻燕     Apus apus 的七聲單叫，剪自兩份野外錄音：
+          · "Mauersegler.ogg" — Jugrü，CC BY-SA 3.0，Wikimedia Commons（六聲）
+          · "Cri de martinet noir" — Uku Paal，CC BY-SA 4.0，Wikimedia Commons（一聲）
+          剪輯、限帶、歸一化；剪出來的片段同樣是 CC BY-SA。
+
+  其餘     雨、雷、風、暴雪都不是錄音，是在頁面裡用噪聲和衰減的分音現場
+          合成的，見 app.js 第 10b 節。
+          除了背景音樂和麻燕那七聲，整個作品用的全是自己合成的聲音：木頭那
+          八類、天候那四張床、風鐸那張沒人用的床，加起來零字節。
+
+  容器禁止 <audio> 走 data:，所以這裡沒有媒體元素：audio.js 只是一段
+  字串，app.js 用 atob 轉成 ArrayBuffer 交給 decodeAudioData，走的是
+  Web Audio，全程沒有資源加載。
+-->
+
+<!-- 经典脚本，按依赖顺序加载，靠 window 命名空间协作。容器不支持 ES 模块，
+     所以这里没有 module 类型、也没有 import。
+     three.js 给 THREE，tex.js 给 TEX，audio.js 给 AUD，app.js 全都要用。 -->
+<script src="./assets/three.js"></script>
+<script src="./assets/tex.js"></script>
+<script src="./assets/audio.js"></script>
+<script src="./assets/app.js"></script>
+</body>
+</html>

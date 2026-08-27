@@ -1,0 +1,43 @@
+<script id="pv-shim">
+/* 桌面预览壳：这个作品是竖屏专用的，桌面窗口的 innerWidth/innerHeight 会让它
+   按桌面尺寸布局。把 window 的这两个属性改成读手机壳的 clientWidth/Height，
+   应用里所有 layout() 就都以 390x844 为准。
+   三个信号一起用：resize（正常浏览器）、每帧 rAF（这个测试环境里 resize 不触发）、
+   visibilitychange（后台标签页 rAF 会被暂停）。 */
+(function(){
+  var el=null;
+  function shell(){ return el||(el=document.getElementById('pv-shell')); }
+  function d(k){ var s=shell(); return s?(k==='w'?s.clientWidth:s.clientHeight):0; }
+  try{
+    Object.defineProperty(window,'innerWidth',{get:function(){return d('w')||390;}});
+    Object.defineProperty(window,'innerHeight',{get:function(){return d('h')||844;}});
+  }catch(e){}
+  /* 窗口比 844 矮的时候，body 是 flex 居中 + overflow:hidden —— 手机壳上下
+     各被切掉一截，底部那排章节标签（其一…其五）就这么没了。lara 2026-08-26:
+     「是不是显示不全了，其一二三四五没有了」。
+     不改壳的尺寸（390x844 是作品的设计尺寸，改了就不是在看真东西了），
+     只整块缩放。clientWidth/Height 不受 transform 影响，所以上面那个
+     innerWidth/innerHeight 的替身仍然报 390x844，layout() 照旧。
+     真实窗口尺寸得走 documentElement —— window.innerWidth 已经被换掉了。
+     左右各留 17px：外面那两圈 box-shadow 机身边框不占布局宽度，但要看得见。 */
+  function fit(){
+    var s=shell();if(!s)return;
+    var de=document.documentElement,
+        vw=de.clientWidth||390,vh=de.clientHeight||844,
+        k=Math.min(1,(vw-34)/390,(vh-34)/844);
+    if(!(k>0.3))k=0.3;
+    var v='translate(0) scale('+k.toFixed(4)+')';
+    if(s.style.transform!==v)s.style.transform=v;
+  }
+  var last=0;
+  function kick(){
+    fit();
+    var w=d('w'),h=d('h'),k=w*10000+h;
+    if(k!==last){last=k;try{window.dispatchEvent(new Event('resize'));}catch(e){}}
+    requestAnimationFrame(kick);
+  }
+  addEventListener('resize',fit);
+  addEventListener('load',kick);
+  addEventListener('visibilitychange',function(){last=0;});
+})();
+</script>

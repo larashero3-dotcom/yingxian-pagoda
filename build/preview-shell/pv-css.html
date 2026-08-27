@@ -1,0 +1,16 @@
+<style id="pv-css">
+html,body{margin:0;height:100%;background:#e8e2d6;
+  display:flex;align-items:center;justify-content:center;overflow:hidden}
+#pv-shell{width:390px;height:844px;position:relative;overflow:hidden;
+  border-radius:44px;box-shadow:0 24px 70px rgba(60,48,32,.34),0 0 0 11px #2b2723,
+  0 0 0 12px #4a443c;background:#f3ede1;
+  /* 关键：作品里的头部栏、方案轨、卡片、底部标签全是 position:fixed，
+     fixed 默认锚在视口上，会摊到整个桌面窗口去。给壳加一个 transform
+     让它成为 fixed 后代的包含块，界面才被关进手机框里。
+     scale 由 pv-shim 每帧按真实窗口算（见那儿的注释）：窗口比 844 矮的时候
+     整块缩着放，而不是被 body 的 overflow:hidden 上下各切一刀。 */
+  transform:translate(0)}
+#pv-shell>*{}
+#pv-note{position:fixed;left:14px;bottom:12px;font:12px/1.5 ui-monospace,monospace;
+  color:#8a7f6c}
+</style>
