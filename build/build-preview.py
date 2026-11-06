@@ -7,15 +7,15 @@
 （剥 pv 壳、按 /*./assets/x.js*/ 标记切脚本、补上被剥掉的闭合 div）只在人的
 脑子里 —— 换个人做就得重新推一遍。所以固定成这个方向，一条命令生成。
 
-预览稿跟拆开那份的三处差别，全在这儿：
+预览稿跟拆开那份的两处差别，全在这儿：
   1. 四个 .js 内联回 <script> 里，各自带 /*./assets/x.js*/ 标记
   2. 套桌面预览壳：pv-css（390x844 手机框）+ pv-shim（把 window 的
      innerWidth/innerHeight 改成读手机框的尺寸）+ #pv-shell 包裹 + #pv-note
-  3. logo 换成 data: URI —— 预览稿是单文件、双击就能看的东西，不引外部文件
+
+预览稿是单文件、双击就能看的东西，不引外部文件。
 
 用法（在仓库任意位置）：python3 build/build-preview.py
 """
-import base64
 import os
 import re
 import sys
@@ -46,14 +46,7 @@ def main():
         inline.append('<script>/*./assets/%s*/\n%s\n\n</script>\n' % (n, body))
     html = html.replace(tags, ''.join(inline))
 
-    # ---- 2. logo 换 data: URI ------------------------------------------
-    with open(os.path.join(SRC, 'assets', 'moxt-logo.png'), 'rb') as f:
-        uri = 'data:image/png;base64,' + base64.b64encode(f.read()).decode()
-    if './assets/moxt-logo.png' not in html:
-        sys.exit('index.html 里找不到 logo 的引用')
-    html = html.replace('./assets/moxt-logo.png', uri)
-
-    # ---- 3. 套预览壳 ---------------------------------------------------
+    # ---- 2. 套预览壳 ---------------------------------------------------
     html = html.replace('</head>', '\n' + read(os.path.join(SHELL, 'pv-css.html'))
                         + '\n</head>', 1)
     html = html.replace('<body>', '<body>\n' + read(os.path.join(SHELL, 'pv-shim.html'))
@@ -61,7 +54,7 @@ def main():
     html = html.replace('</body>', '</div>\n' + read(os.path.join(SHELL, 'pv-note.html'))
                         + '\n</body>', 1)
 
-    # ---- 4. 自查：内联脚本数、壳齐了、没有残留的外部引用 ----------------
+    # ---- 3. 自查：内联脚本数、壳齐了、没有残留的外部引用 ----------------
     n_inline = len(re.findall(r'<script>/\*\./assets/', html))
     if n_inline != 4:
         sys.exit('内联脚本数不对：%d（应为 4）' % n_inline)

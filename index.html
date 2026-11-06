@@ -26,12 +26,6 @@
        截是 55% 透的，正文从按钮里透出来、border-top 正好切在一行字中间。
        现在背景实色，坡放到按钮外面去；而且收起时整个不给它 —— 128px 的 peek
        里塞一颗 44px 的键，怎么排都是坐在字上。收起时反而多露一行正文。
-     · 加了署名。开篇题记的下缘，「在 [Moxt] 制作」，官网 wordmark。放这儿是
-       因为读者必须按「入塔」才能往下走，这一眼留得住，而正文五章一格不占
-       （顶栏已经有題名加五枚开关，底下五个章节键是拇指区，都动不得）。
-       「入塔」的 sticky 贴边跟着从 bottom:0 抬到 24px，不然矮屏滚起来它会压
-       到署名上。
-
    v9 相对 v8 只改文字，一处几何、一枚构件都没动（lara 2026-08-27 定稿，
    稿子在 personal/应县木塔-其二其三文案重写.md）：
      · 其二 / 其三 重划分工。v8 的「塔里」一章同时讲塑像和结构，结构本来
@@ -325,13 +319,8 @@ header{position:absolute;left:0;right:0;top:0;z-index:8;
    「缓缓往上浮现」就是这一条 transition，1.6 秒，慢到能看出是在浮。
    矮机器（SE 一代 568、横过来 460）装不下就滚：宁可滚，不能把「入塔」挤出
    屏幕外面 —— 那是这一屏唯一的出口，看不见就等于卡死了。 */
-/* 整块字的下缘抬 22px，让出署名那一条（.ovt-by 是兄弟节点，钉在真正的底边）。
-   抬的是这个盒子本身，不是给它加下内边距 —— 「入塔」是 sticky 的，sticky 贴的
-   是滚动容器的 padding box，加内边距拦不住它，而给它设 bottom:24px 又会把它从
-   正文末行上面顶过去（量出来正文和键之间从 +15px 变成 -7px，正好压住最后一行）。
-   把盒子整个抬起来，盒内一切照旧，署名住在盒子外面那条带子里。 */
-.ovt-in{position:absolute;left:0;right:0;bottom:calc(var(--sa-b) + 22px);
-  max-height:calc(100% - var(--bar-t) - var(--sa-t) - var(--sa-b) - 22px);
+.ovt-in{position:absolute;left:0;right:0;bottom:var(--sa-b);
+  max-height:calc(100% - var(--bar-t) - var(--sa-t) - var(--sa-b));
   overflow-y:auto;-webkit-overflow-scrolling:touch;
   overscroll-behavior-y:contain;
   padding:0 26px 18px;
@@ -369,17 +358,6 @@ header{position:absolute;left:0;right:0;top:0;z-index:8;
   cursor:pointer;opacity:0;pointer-events:none;transition:opacity .9s ease;}
 #app.is-ovt-3 .ovt-go{opacity:1;pointer-events:auto}
 .ovt-go:active{opacity:.5}
-
-/* 署名。整篇只出现在开篇这一屏：读者必须按「入塔」才能往下走，所以这一眼是
-   留得住的，而正文五章一格都不占（顶栏已经有題名 + 五枚开关，390 宽塞不下；
-   底下那五个章节键是拇指区，更不能动）。落地之后随 .ovt 整层退掉。
-   跟着 .ovt 的 pointer-events:none 走 —— 它是署名，不是可以按的东西。 */
-.ovt-by{position:absolute;left:0;right:0;bottom:calc(var(--sa-b) + 5px);
-  display:flex;align-items:center;justify-content:center;gap:7px;
-  font-family:var(--sans);font-size:9px;letter-spacing:2.4px;color:var(--ink2);
-  opacity:0;transition:opacity 1.6s ease;}
-#app.is-ovt-2 .ovt-by,#app.is-ovt-3 .ovt-by{opacity:.7}
-.ovt-logo{height:12px;width:auto;display:block}
 
 /* 开篇没落地之前，这一页只有塔和字。导航、进度轨、纪年轨、说明卡、塔身上的
    标注一律不出现 —— 「先把下面的其一其二啥的都隐藏起来」。
@@ -897,14 +875,6 @@ footer{position:absolute;left:0;right:0;z-index:7;
       <div class="ovt-rule"></div>
       <div class="ovt-p" id="ovtP"></div>
       <button class="ovt-go" id="ovtGo" type="button">入&nbsp;塔</button>
-    </div>
-    <!-- 署名。官网的 wordmark（583×167 PNG，绿六边形 + Moxt），不是自己画的
-         图形。打包版引包内文件；预览版由 build 脚本换成 data: URI，好让那个
-         单文件双击就能看。 -->
-    <div class="ovt-by">
-      <span>在</span>
-      <img class="ovt-logo" src="./assets/moxt-logo.png" alt="Moxt" />
-      <span>制作</span>
     </div>
   </div>
 

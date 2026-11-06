@@ -2,7 +2,7 @@
 
 [中文](README.md) | English
 
-[![Yingxian Pagoda: a Liao-dynasty timber pagoda, its fabric, contents, frame, lean and repair argument, built as a portrait web page](preview/hero-en.png)](https://moxt.ai)
+![Yingxian Pagoda: a Liao-dynasty timber pagoda, its fabric, contents, frame, lean and repair argument, built as a portrait web page](preview/hero-en.png)
 
 The Sakyamuni Pagoda of Fogong Temple stands in the northwest corner of Ying County, Shuozhou, Shanxi. It was raised in 1056, the second year of the Qingning era of the Liao dynasty, and completed with additions in 1195, the sixth year of the Mingchang era of the Jin. It is the largest and oldest surviving multi-storey timber pagoda in China, and before the twentieth century nothing taller had been built in wood anywhere. It now leans badly enough that collapse is a real prospect, and no conservation plan has been carried out.
 
@@ -109,8 +109,7 @@ yingxian-pagoda/
 │   ├── app.js          # geometry, materials, cut plane, landscape, weather, interaction
 │   ├── three.js        # Three.js r149, MIT
 │   ├── tex.js          # 14 textures, WebP data URIs
-│   ├── audio.js        # audio, data URIs
-│   └── moxt-logo.png
+│   └── audio.js        # audio, data URIs
 ├── preview.html        # desktop preview build (derived)
 ├── preview/            # README screenshots and hero images, not read at runtime
 ├── build/              # preview.html generator, plus the hero images' HTML source
@@ -145,7 +144,3 @@ This project is not affiliated with any cultural heritage institution. The repai
 ## Licence
 
 MIT. See [LICENSE](LICENSE).
-
----
-
-Made at [Moxt](https://moxt.ai).

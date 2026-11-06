@@ -2,7 +2,7 @@
 
 中文 | [English](README.en.md)
 
-[![應縣木塔：一座辽代木塔的外观、内藏、结构、倾斜史与修缮方案之争，做成一个用手指看的竖屏网页](preview/hero-zh.png)](https://moxt.ai)
+![應縣木塔：一座辽代木塔的外观、内藏、结构、倾斜史与修缮方案之争，做成一个用手指看的竖屏网页](preview/hero-zh.png)
 
 佛宫寺释迦塔，在山西朔州应县城内西北隅。辽清宁二年（1056）立，金明昌六年（1195）增修完毕，俗呼应县木塔。现存体量最大、时代最古老的木结构楼阁式塔；二十世纪以前，世上没有比它更高的木构。如今，木塔已有较为严重的倾斜，面临倒塌危机，亟需保护措施落地。
 
@@ -105,8 +105,7 @@ yingxian-pagoda/
 │   ├── app.js          # 几何、材质、剖切、地景、天气、交互
 │   ├── three.js        # Three.js r149，MIT
 │   ├── tex.js          # 14 张贴图，WebP data URI
-│   ├── audio.js        # 音频，data URI
-│   └── moxt-logo.png
+│   └── audio.js        # 音频，data URI
 ├── preview.html        # 桌面预览稿（派生物）
 ├── preview/            # README 用截图与 hero 图，运行时不读取
 ├── build/              # preview.html 的生成脚本、hero 图的 HTML 源
@@ -141,7 +140,3 @@ yingxian-pagoda/
 ## 许可
 
 MIT。见 [LICENSE](LICENSE)。
-
----
-
-在 [Moxt](https://moxt.ai) 制作。

@@ -4551,14 +4551,10 @@ function paintOvt(){
 /* 帘子只比字块高出一道缓坡。字块的高度随屏幕和字号变，所以量出来写，
    别在 CSS 里写死一个百分比。layout() 和每次换拍都调一遍。 */
 const OVT_FEATHER=76;
-/* 字块下缘抬起来让出的那条带子，署名住在里面（CSS 里 .ovt-in 的 bottom 和
-   .ovt-by 都按这个数排）。帘子是 bottom:0 的，要连这条带子一起盖上，不然
-   署名会落在塔上而不是纸上。 */
-const OVT_BY_BAND=22;
 function fitOvtVeil(){
   const box=document.querySelector('.ovt-in'),veil=document.querySelector('.ovt-veil');
   if(!box||!veil)return;
-  veil.style.height=(box.offsetHeight+OVT_BY_BAND+OVT_FEATHER)+'px';
+  veil.style.height=(box.offsetHeight+OVT_FEATHER)+'px';
 }
 function applyOvt(){
   const ap=document.getElementById('app');
